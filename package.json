@@ -11,7 +11,7 @@
     "node-lambda": "0.11.4"
   },
   "scripts": {
-    "deploy-qa": "./node_modules/.bin/node-lambda deploy -e qa -S config/event-sources-qa.json -f ./config/qa.env --role arn:aws:iam::224280085904:role/lambda_basic_execution --profile nypl-sandbox",
+    "deploy-qa": "./node_modules/.bin/node-lambda deploy -e qa -f ./config/qa.env --role arn:aws:iam::224280085904:role/lambda_basic_execution --profile nypl-sandbox",
     "test": "npm test"
   },
   "repository": {
