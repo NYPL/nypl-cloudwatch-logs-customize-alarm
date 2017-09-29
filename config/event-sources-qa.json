@@ -1,0 +1,8 @@
+{
+  "EventSourceMappings": [
+    {
+      "EventSourceArn": "arn:aws:sns:us-east-1:224280085904:NightlyRecapHarvesterAlarm",
+      "Enabled": true
+    }
+  ]
+}

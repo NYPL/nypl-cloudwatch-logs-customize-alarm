@@ -13,9 +13,9 @@ When you get an alarm, you want enough information to decide whether it needs im
 
 ## Setup Overview
 
-This is a lambda, written in node. It uses the latest (at time) aws-sdk which includes the metrics to logs feature. See 'Configurable parameters' section below.  
+1. `cp ./config/deploy-env.example.env ./config/[qa|production].env`
 
-TODO: Write a setup that includes copying ENV files.
+2. Fill in appropriate environment variables.
 
 ### Pre-requisite
 

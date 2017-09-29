@@ -60,10 +60,9 @@ function generateEmailContent(data, message) {
         logData += '<pre>Instance:' + JSON.stringify(events[i]['logStreamName'])  + '</pre>';
         logData += '<pre>Message:' + JSON.stringify(events[i]['message']) + '</pre><br/>';
     }
-    
+
     var date = new Date(message.StateChangeTime);
-    var text = 'Alarm Name: ' + '<b>' + message.AlarmName + '</b><br/>' + 
-               'Runbook Details: <a href="http://wiki.mycompany.com/prodrunbook">Production Runbook</a><br/>' +
+    var text = 'Alarm Name: ' + '<b>' + message.AlarmName + '</b><br/>' +
                'Account ID: ' + message.AWSAccountId + '<br/>'+
                'Region: ' + message.Region + '<br/>'+
                'Alarm Time: ' + date.toString() + '<br/>'+
@@ -71,7 +70,7 @@ function generateEmailContent(data, message) {
     var subject = 'Details for Alarm - ' + message.AlarmName;
     var emailContent = {
         Destination: {
-            ToAddresses: ["Add destination email here"]
+            ToAddresses: process.env.TO_ADDRESSES.split(",").map(function(address) {return address.trim() })
         },
         Message: {
             Body: {
@@ -83,8 +82,8 @@ function generateEmailContent(data, message) {
                 Data: subject
             }
         },
-        Source: 'Add source email here'
+        Source: process.env.FROM_ADDRESS
     };
-    
+
     return emailContent;
 }
