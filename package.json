@@ -1,0 +1,26 @@
+{
+  "name": "gs",
+  "version": "1.0.0",
+  "description": "Subscribes to SNS messages (from alarms), gets relavant log lines, emails them.",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^2.1.2",
+    "aws-sdk": "^2.7.0"
+  },
+  "devDependencies": {
+    "node-lambda": "0.11.4"
+  },
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nypl/cloudwatch-logs-customize-alarm.git"
+  },
+  "author": "The New York Public Library",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nypl/cloudwatch-logs-customize-alarm/issues"
+  },
+  "homepage": "https://github.com/nypl/cloudwatch-logs-customize-alarm#readme"
+}
