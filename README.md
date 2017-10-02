@@ -3,6 +3,8 @@
 This is based on [awslabs/cloudwatch-logs-customize-alarms](https://github.com/awslabs/cloudwatch-logs-customize-alarms) (at revisison c43e22665). The code has been altered to reflect our workflow & to make use of the runtime-environment variables.
 The README has changed to reflect those code changes. It doesn't make sense for this app to be a true fork of awslabs/cloudwatch-logs-customize-alarms, given the way that GitHub repo is setup now.
 
+**This README contains much of copy from awslabs/cloudwatch-logs-customize-alarms, but it augmented for how we deploy.**
+
 # CloudWatch Logs Customize Alarms
 
 When you get an alarm, you want enough information to decide whether it needs immediate attention or not. You also want to customize the alarm text to operational needs. The **CloudWatch Logs Customize Alarms** is a Lambda function that helps in reading the logs from CloudWatch Logs during an alarm and send a customized email through SES.
@@ -67,13 +69,6 @@ Since there is a need here for various AWS services making calls to each other, 
 ```
 
 ### Lambda Function
-
-***Configurable parameters:***
-
-1. **Destination** - The destination email address where email needs to be send.
-2. **Source** - The source email address sending the email.
-
-For more information visit the SES documentation [here](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SES.html)
 
 ***Instructions:***
 

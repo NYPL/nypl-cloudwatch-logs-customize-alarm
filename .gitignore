@@ -2,6 +2,9 @@
 log/*.log
 npm-debug.log*
 
+config/qa.env
+config/production.env
+
 local.json
 
 # Runtime data
