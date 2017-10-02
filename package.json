@@ -1,7 +1,7 @@
 {
   "name": "gs",
   "version": "1.0.0",
-  "description": "Subscribes to SNS messages (from alarms), gets relavant log lines, emails them.",
+  "description": "Subscribes to SNS messages (from alarms), gets relevant log lines, emails them.",
   "main": "index.js",
   "dependencies": {
     "async": "^2.1.2",
