@@ -1,5 +1,5 @@
 {
-  "name": "gs",
+  "name": "nypl-cloudwatch-alarm-mailer",
   "version": "1.0.0",
   "description": "Subscribes to SNS messages (from alarms), gets relevant log lines, emails them.",
   "main": "index.js",
