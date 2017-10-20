@@ -2,8 +2,14 @@
 log/*.log
 npm-debug.log*
 
-config/qa.env
-config/production.env
+# Distribution directory (Babel)
+dist/*
+
+# Lambda directory created by node-lambda module
+.lambda
+
+# Users Environment Variables
+config/*.env
 
 local.json
 
@@ -47,3 +53,8 @@ build
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Misc
+.DS_Store
+*.swp
+*.nyc_output

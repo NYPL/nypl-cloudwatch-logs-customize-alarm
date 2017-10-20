@@ -1,89 +1,95 @@
+import aws from 'aws-sdk';
 
-var aws = require('aws-sdk');
-var cwl = new aws.CloudWatchLogs();
+const cwl = new aws.CloudWatchLogs();
+const ses = new aws.SES();
 
-var ses = new aws.SES();
+exports.handler = (event, context) => {
+  console.log('Event in main exports.handler: ', event);
 
-exports.handler = function(event, context) {
-    var message = JSON.parse(event.Records[0].Sns.Message);
-    var alarmName = message.AlarmName;
-    var oldState = message.OldStateValue;
-    var newState = message.NewStateValue;
-    var reason = message.NewStateReason;
-    var requestParams = {
-        metricName: message.Trigger.MetricName,
-        metricNamespace: message.Trigger.Namespace
-    };
-    cwl.describeMetricFilters(requestParams, function(err, data) {
-        if(err) console.log('Error is:', err);
-        else {
-            console.log('Metric Filter data is:', data);
-    	    getLogsAndSendEmail(message, data);
-        }
-    });
+  const message = JSON.parse(event.Records[0].Sns.Message);
+  const alarmName = message.AlarmName;
+  const oldState = message.OldStateValue;
+  const newState = message.NewStateValue;
+  const reason = message.NewStateReason;
+  const requestParams = {
+    metricName: message.Trigger.MetricName,
+    metricNamespace: message.Trigger.Namespace
+  };
+
+  cwl.describeMetricFilters(requestParams, (err, data) => {
+      if(err) {
+        console.log('Error is:', err);
+      } else {
+        console.log('Metric Filter data is:', data);
+        getLogsAndSendEmail(message, data);
+      }
+  });
 };
 
-
-function getLogsAndSendEmail(message, metricFilterData) {
-    var timestamp = Date.parse(message.StateChangeTime);
-    var offset = message.Trigger.Period * message.Trigger.EvaluationPeriods * 1000;
-    var metricFilter = metricFilterData.metricFilters[0];
-    var parameters = {
-        'logGroupName' : metricFilter.logGroupName,
-        'filterPattern' : metricFilter.filterPattern ? metricFilter.filterPattern : "",
-         'startTime' : timestamp - offset,
-         'endTime' : timestamp
+const getLogsAndSendEmail = (message, metricFilterData) => {
+    const timestamp = Date.parse(message.StateChangeTime);
+    const offset = message.Trigger.Period * message.Trigger.EvaluationPeriods * 1000;
+    const metricFilter = metricFilterData.metricFilters[0];
+    const parameters = {
+      'logGroupName' : metricFilter.logGroupName,
+      'filterPattern' : metricFilter.filterPattern ? metricFilter.filterPattern : "",
+      'startTime' : timestamp - offset,
+      'endTime' : timestamp
     };
-    cwl.filterLogEvents(parameters, function (err, data){
-        if (err) {
-            console.log('Filtering failure:', err);
-        } else {
-            console.log("===SENDING EMAIL===");
 
-            var email = ses.sendEmail(generateEmailContent(data, message), function(err, data){
-                if(err) console.log(err);
-                else {
-                    console.log("===EMAIL SENT===");
-                    console.log(data);
-                }
-            });
-        }
+    cwl.filterLogEvents(parameters, (err, data) => {
+      if (err) {
+        console.log('Filtering failure:', err);
+      } else {
+        console.log("===SENDING EMAIL===");
+
+        const email = ses.sendEmail(generateEmailContent(data, message), function(err, data) {
+          if(err) {
+            console.log(err);
+          } else {
+            console.log("===EMAIL SENT===");
+            console.log(data);
+          }
+        });
+      }
     });
 }
 
-function generateEmailContent(data, message) {
-    var events = data.events;
-    console.log('Events are:', events);
-    var style = '<style> pre {color: red;} </style>';
-    var logData = '<br/>Logs:<br/>' + style;
-    for (var i in events) {
-        logData += '<pre>Instance:' + JSON.stringify(events[i]['logStreamName'])  + '</pre>';
-        logData += '<pre>Message:' + JSON.stringify(events[i]['message']) + '</pre><br/>';
-    }
+const generateEmailContent = (data, message) => {
+  const events = data.events;
+  console.log('Events are:', events);
 
-    var date = new Date(message.StateChangeTime);
-    var text = 'Alarm Name: ' + '<b>' + message.AlarmName + '</b><br/>' +
-               'Account ID: ' + message.AWSAccountId + '<br/>'+
-               'Region: ' + message.Region + '<br/>'+
-               'Alarm Time: ' + date.toString() + '<br/>'+
-               logData;
-    var subject = 'Details for Alarm - ' + message.AlarmName;
-    var emailContent = {
-        Destination: {
-            ToAddresses: process.env.TO_ADDRESSES.split(",").map(function(address) {return address.trim() })
-        },
-        Message: {
-            Body: {
-                Html: {
-                    Data: text
-                }
-            },
-            Subject: {
-                Data: subject
-            }
-        },
-        Source: process.env.FROM_ADDRESS
-    };
+  const style = '<style> pre {color: red;} </style>';
+  let logData = '<br/>Logs:<br/>' + style;
 
-    return emailContent;
+  for (var i in events) {
+    logData += `<pre>Instance: ${JSON.stringify(events[i]['logStreamName'])}</pre>`;
+    logData += `<pre>Message: ${JSON.stringify(events[i]['message'])}</pre><br/>`;
+  }
+
+  const date = new Date(message.StateChangeTime);
+  const subject = 'Details for Alarm - ' + message.AlarmName;
+  const text = 'Alarm Name: ' + '<b>' + message.AlarmName + '</b><br/>' +
+   'Account ID: ' + message.AWSAccountId + '<br/>' +
+   'Region: ' + message.Region + '<br/>' +
+   'Alarm Time: ' + date.toString() + '<br/>' + logData;
+
+  const emailContent = {
+    Destination: {
+      ToAddresses: process.env.TO_ADDRESSES.split(",").map(address => address.trim())
+    },
+    Message: {
+      Body: {
+        Html: {
+          Data: text
+        }
+      },
+      Subject: {
+        Data: subject
+      }
+    },
+    Source: process.env.FROM_ADDRESS
+  };
+
+  return emailContent;
 }

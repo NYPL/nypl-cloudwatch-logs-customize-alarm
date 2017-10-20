@@ -4,14 +4,23 @@
   "description": "Subscribes to SNS messages (from alarms), gets relevant log lines, emails them.",
   "main": "index.js",
   "dependencies": {
-    "async": "^2.1.2",
-    "aws-sdk": "^2.7.0"
+    "async": "2.1.2",
+    "aws-sdk": "2.7.0",
+    "babel-runtime": "6.26.0"
   },
   "devDependencies": {
-    "node-lambda": "0.11.4"
+    "babel-cli": "6.26.0",
+    "babel-plugin-istanbul": "4.1.5",
+    "babel-plugin-transform-runtime": "6.23.0",
+    "babel-preset-env": "1.6.0",
+    "babel-register": "6.26.0",
+    "node-lambda": "0.11.4",
+    "rimraf": "2.6.2"
   },
   "scripts": {
-    "deploy-qa": "./node_modules/.bin/node-lambda deploy -e qa -f ./config/qa.env --role arn:aws:iam::224280085904:role/lambda_basic_execution --profile nypl-sandbox",
+    "clean": "./node_modules/.bin/rimraf dist",
+    "build": "npm run clean && babel index.js --out-dir dist",
+    "deploy-qa": "npm run build && ./node_modules/.bin/node-lambda deploy -e qa -f ./config/qa.env --handler dist/index.handler --role arn:aws:iam::224280085904:role/lambda_basic_execution --profile nypl-sandbox",
     "test": "npm test"
   },
   "repository": {
